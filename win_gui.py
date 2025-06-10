@@ -52,7 +52,7 @@ def hevyprocess(dirPath,flag):
                 tofowerdslash = tofowerdslash.replace("\\","/")
                 f.writelines(f"file {tofowerdslash}\n")
 
-        command = f' ffmpeg -f concat -safe 0 -i North.txt -c copy {out_path}'
+        command = f' ffmpeg -f concat -safe 0 -i North.txt -c:v h264_qsv {out_path}'
         print(f"\n{command}")
         subprocess.call(command, shell=True)
 
@@ -73,7 +73,7 @@ def hevyprocess(dirPath,flag):
                 tofowerdslash = tofowerdslash.replace("\\","/")
                 f.writelines(f"file {tofowerdslash}\n")
 
-        command = f' ffmpeg -f concat -safe 0 -i South.txt -c copy {out_path}'
+        command = f' ffmpeg -f concat -safe 0 -i South.txt -c:v h264_qsv {out_path}'
         print(f"\n{command}")
         subprocess.call(command, shell=True)
 
