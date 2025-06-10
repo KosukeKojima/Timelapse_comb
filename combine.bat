@@ -16,6 +16,6 @@ echo %FILES%
 
 pause
 
-ffmpeg %FILES% -filter_complex "concat=n=%N%:v=1:a=0" %1.merged.mp4
+ffmpeg %FILES% -filter_complex "concat=n=%N%:v=1:a=0" -c:v h264_qsv %1.merged.mp4
 
 pause
