@@ -25,4 +25,7 @@ def rename( video_dir ):
             if len(file) < max_len:
                 print(f"{file[:(max_len - 9 + 1 )]}0{file[(max_len - 9 + 1):len(file)]}")
                 newname = (f"{file[:(max_len - 9 + 1 )]}0{file[(max_len - 9 + 1):len(file)]}")
-                os.rename(file,newname)
+                try:
+                    os.rename(file,newname)
+                except:
+                    pass
