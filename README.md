@@ -1,0 +1,2 @@
+### ffmpegのインストール
+winget install --id=Gyan.FFmpeg -e
