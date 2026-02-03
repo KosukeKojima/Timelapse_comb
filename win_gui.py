@@ -1,4 +1,4 @@
-import os,sys
+import os
 import glob
 from tkinter import *
 from tkinter import ttk
@@ -6,15 +6,13 @@ from tkinter import messagebox
 from tkinter import filedialog
 
 import threading
-import cv2
 import glob
 from pathlib import Path
 
 import rename
+import files_check
 import subprocess
 flag = False
-
-
 
 def hevyprocess(dirPath,flag):
 
@@ -105,7 +103,19 @@ def conductMain():
         messagebox.showinfo("処理が終わるまで止められません", text)
         #print(text)
 
-        #ソートが正しく行われるようにするための処理
+        #フォルダの階層を判定
+        flag_check = files_check.check_files(dirPath)
+        #flagcheckの内容に応じて処理を分岐させる
+        print(flag_check)
+        if flag_check[0] == "error":
+            messagebox.showerror("error", "指定されたフォルダが不正、または動画はありませんでした。")
+            return -1
+        #その他返り値の場合、2番目の要素を変数に格納
+        all_folders = flag_check[1]
+        print(all_folders)
+        #all_foldersには動画ファイルのパスが格納されている
+
+        #ソートが正しく行われるようにするためにリネーム処理を先に実行
         rename.rename(dirPath)
 
         #UIをフリーズさせない為に別スレッドで実行
