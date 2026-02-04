@@ -93,7 +93,7 @@ check_files("C:\\Users\\TSU8033\\Videos\\original\\2025年\\10月")
 
 #rename.rename( paths )
 
-files = check_files("C:\\Users\\TSU8033\\Videos\\original\\2026年\\1月 - コピー")
-paths = check_rename(files[1])
+#files = check_files("C:\\Users\\TSU8033\\Videos\\original\\2026年\\1月 - コピー")
+#paths = check_rename(files[1])
 
-rename.rename( paths )
+#rename.rename( paths )
