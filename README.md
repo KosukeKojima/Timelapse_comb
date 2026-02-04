@@ -10,10 +10,10 @@ curl -O -L https://github.com/KosukeKojima/Timelapse_comb/releases/download/test
 <pre>
   ├──2026年
   │   ├──01月
-  │   │   ├──01月01日
-  │   │   ├──01月02日
+  │   │   ├──01月01日.mp4
+  │   │   ├──01月02日.mp4
   │   │   ⋮ 
-  │   │   └──01月30日
+  │   │   └──01月30日.mp4
   │   │
   │   ├──02月
   │   │
