@@ -2,6 +2,36 @@
 
 import glob
 import re
+import os
+import rename
+
+#リネームが必要かどうかを判定し、リネームするパスを返す関数
+def check_rename( video_paths ):
+    rename_paths = []
+    
+    for video_path in video_paths:
+        #ファイル名を取得
+        #print(video_paths)
+        filename = os.path.splitext(os.path.basename(video_path))[0]
+        print(filename)
+
+        #数字部分を抽出してリスト化
+        numbers = re.findall(r'\d+', filename)
+        print(numbers)
+
+        #数字部分の長さを確認
+        need_rename = False
+        for number in numbers:
+            if len(number) < 2:
+                need_rename = True
+                break
+        
+        if need_rename:
+            rename_paths.append(video_path)
+    
+    #print(len(rename_paths))
+
+    return rename_paths
 
 #どの階層のフォルダが指定されているかを判定する関数
 def check_files( video_dir ):
@@ -56,3 +86,14 @@ def check_files( video_dir ):
 check_files("C:\\Users\\TSU8033\\Videos\\original")
 check_files("C:\\Users\\TSU8033\\Videos\\original\\2025年")
 check_files("C:\\Users\\TSU8033\\Videos\\original\\2025年\\10月")
+
+
+#files = check_files("C:\\Users\\TSU8033\\Videos\\original\\2026年\\1月")
+#paths = check_rename(files[1])
+
+#rename.rename( paths )
+
+files = check_files("C:\\Users\\TSU8033\\Videos\\original\\2026年\\1月 - コピー")
+paths = check_rename(files[1])
+
+rename.rename( paths )

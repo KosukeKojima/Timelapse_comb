@@ -42,15 +42,15 @@ def hevyprocess(dirPath,flag):
         print(out_path)
         print(files)
         
-        print(f"{os.getcwd()}//North.txt")
+        print(f"{os.getcwd()}//.North.txt")
 
-        with open(f"{os.getcwd()}//North.txt",mode="w",encoding="utf_8") as f:
+        with open(f"{os.getcwd()}//.North.txt",mode="w",encoding="utf_8") as f:
             for file in files:
                 tofowerdslash = str(Path(file))
                 tofowerdslash = tofowerdslash.replace("\\","/")
                 f.writelines(f"file {tofowerdslash}\n")
 
-        command = f' ffmpeg -f concat -safe 0 -i North.txt -c:v h264_qsv {out_path}'
+        command = f' ffmpeg -f concat -safe 0 -i .North.txt -c:v h264_qsv {out_path}'
         print(f"\n{command}")
         subprocess.call(command, shell=True)
 
@@ -63,9 +63,9 @@ def hevyprocess(dirPath,flag):
 
         print(out_path)
         
-        print(f"{os.getcwd()}//South.txt")
+        print(f"{os.getcwd()}//.South.txt")
 
-        with open(f"{os.getcwd()}//South.txt",mode="w",encoding="utf_8") as f:
+        with open(f"{os.getcwd()}//.South.txt",mode="w",encoding="utf_8") as f:
             for file in files:
                 tofowerdslash = str(Path(file))
                 tofowerdslash = tofowerdslash.replace("\\","/")
@@ -75,21 +75,26 @@ def hevyprocess(dirPath,flag):
         print(f"\n{command}")
         subprocess.call(command, shell=True)
 
-    os.remove( "South.txt" )
-    os.remove( "North.txt" )
+    try:
+        os.remove( ".South.txt" )
+    except:
+        pass
+
+    try:
+        os.remove( ".North.txt" )
+    except:
+        pass
 
     button1.pack()
     
     messagebox.showinfo('連結完了', '処理が終了しました')
     exit()
 
-
 # フォルダ指定の関数
 def dirdialog_clicked():
     iDir = os.path.abspath(os.path.dirname(__file__))
     iDirPath = filedialog.askdirectory(initialdir = iDir)
     entry1.set(iDirPath)
-
 
 # 実行ボタン押下時の実行関数
 def conductMain():
@@ -114,9 +119,14 @@ def conductMain():
         all_folders = flag_check[1]
         print(all_folders)
         #all_foldersには動画ファイルのパスが格納されている
+        
+        rename_paths = files_check.check_rename(all_folders)
+        print(rename_paths)
 
+        for video_dir in rename_paths:
+            rename.rename(video_dir)
         #ソートが正しく行われるようにするためにリネーム処理を先に実行
-        rename.rename(dirPath)
+        #rename.rename(dirPath)
 
         #UIをフリーズさせない為に別スレッドで実行
         thread = threading.Thread(target=hevyprocess,args=(dirPath,flag))
