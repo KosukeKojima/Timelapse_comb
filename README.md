@@ -8,6 +8,7 @@ curl -O -L https://github.com/KosukeKojima/Timelapse_comb/releases/download/test
 ファイル構造例
 
 <pre>
+  Videos
   ├──2026年
   │   ├──01月
   │   │   ├──01月01日.mp4
@@ -21,5 +22,10 @@ curl -O -L https://github.com/KosukeKojima/Timelapse_comb/releases/download/test
   │   └──XX月
   │
   ⋮
-  └──XXXX年
+  ├──XXXX年
+  │
+  ├──2026年01月.mp4
+  │  
+  └──(隠しファイル)記録用ファイル.txt
+  
 </pre>
