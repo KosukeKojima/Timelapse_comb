@@ -20,5 +20,6 @@ curl -O -L https://github.com/KosukeKojima/Timelapse_comb/releases/download/test
   │   ⋮
   │   └──XX月
   │
+  ⋮
   └──XXXX年
 </pre>
