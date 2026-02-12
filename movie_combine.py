@@ -1,62 +1,117 @@
-import cv2
 import glob
+import os
+
 from pathlib import Path
 
-def comb_movie(movie_files,out_path):
+import subprocess
+
+import done_folder_check
+
+#受け取った配列内のパスから北のパスと南のパスを分割する
+def split_NorS( path ):
+
+    south_path = sorted(glob.glob(f"{path}//*南.mp4"))
+    north_path = sorted(glob.glob(f"{path}//*北.mp4"))
+
+    return north_path , south_path
+
+
+#南のファイルを結合
+def combine_south( south_paths , output_path ):
+
+    #出力ファイル名
+    output_path = output_path + "南.mp4"
+
+    if os.path.exists( f"{os.getcwd()}//South.txt" ):
+        os.remove( f"{os.getcwd()}//South.txt" )
+
+    print(os.getcwd())
+    with open(f"{os.getcwd()}//South.txt",mode="w",encoding="utf_8") as f:
+            for file in south_paths:
+                tofowerdslash = str(Path(file))
+                tofowerdslash = tofowerdslash.replace("\\","/")
+                f.writelines(f"file {tofowerdslash}\n")
+
+    command = f' ffmpeg -f concat -safe 0 -i South.txt -c:v h264_qsv {output_path}'
+    print(f"\n{command}")
+    try:
+        ret = subprocess.run(command, shell=True ,check=True )
+
+    except subprocess.CalledProcessError as e:
+        print(e)
+        print("動画の連結に失敗しました。\n指定したパスを確認してください。")
+        exit(0)
+    try:
+        os.remove( "South.txt" )
+    except:
+        pass
+
     
-    # 形式はmp4
-    fourcc = cv2.VideoWriter_fourcc('m','p','4','v')
+#北のファイルを結合
+def combine_north( north_paths , output_path ):
 
-    # 動画情報の取得
-    movie = cv2.VideoCapture(movie_files[0])
-    fps = movie.get(cv2.CAP_PROP_FPS)
-    height = movie.get(cv2.CAP_PROP_FRAME_HEIGHT)
-    width = movie.get(cv2.CAP_PROP_FRAME_WIDTH)
+    #出力ファイル名
+    output_path = output_path + "北.mp4"
 
-    # 出力先のファイルを開く
-    out = cv2.VideoWriter(out_path, int(fourcc), fps, (int(width), int(height)))
-        
-    for movies in (movie_files):
-        print(movies)
-        # 動画ファイルの読み込み，引数はビデオファイルのパス
-        movie = cv2.VideoCapture(movies)
+    if os.path.exists( f"{os.getcwd()}//North.txt" ):
+        os.remove( f"{os.getcwd()}//North.txt" )
 
-        # 正常に動画ファイルを読み込めたか確認
-        if movie.isOpened() == True: 
-            # read():1コマ分のキャプチャ画像データを読み込む
-            ret, frame = movie.read() 
-        else:
-            ret = False
-        
-        while ret:
-            # 読み込んだフレームを書き込み
-            out.write(frame)
-            # 次のフレーム読み込み
-            ret, frame = movie.read()
+    #print(os.getcwd())
+    with open(f"{os.getcwd()}//North.txt",mode="w",encoding="utf_8") as f:
+            for file in north_paths:
+                tofowerdslash = str(Path(file))
+                tofowerdslash = tofowerdslash.replace("\\","/")
+                f.writelines(f"file {tofowerdslash}\n")
 
-#print("OpenCV version")
-#print(cv2.__version__)
+    command = f' ffmpeg -f concat -safe 0 -i North.txt -c:v h264_qsv {output_path}'
+    print(f"\n{command}")
+    try:
+        ret = subprocess.run(command, shell=True ,check=True)
+
+    except subprocess.CalledProcessError as e:
+        print(e)
+        print("動画の連結に失敗しました。\n指定したパスを確認してください。")
+        exit(0)
+    try:
+        os.remove( "North.txt" )
+    except:
+        pass
 
 
-#ym = [ 2025 , 4 ]
+#combine_movies( ["パス1","パス2",...] , "year,month,dateのいづれか" , [再帰的に取得した全てのパス] )
+def combine_movies( array , flag , all_path ):
 
-#path = f"{home}\Videos\original"
-#path = f"./original/{ym[0]}年/{ym[1]}月"
+    if flag == "year":
 
-# ディレクトリ内の動画をリストで取り出す
-#files = sorted(glob.glob( path + "/*南.mp4"))
+        #月のフォルダが指定された場合UserディレクトリのVideoフォルダに出力
+        output_path = f"{Path.home()}\\Videos"
 
-# 出力ファイル名
-#out_path = f"{ym[0]}年{ym[1]}月南.mp4"
+    elif flag == "month":
 
-#comb_movie(files,out_path)
+        for path in array:
+        #月のフォルダが指定された場合親ディレクトリに出力
+        #(パスは確認済みなので、拡張子を付け足すのみでOK)
 
+            #record.txtの配列にパスがふくまれ、00月.mp4のフォルダが存在する場合処理を抜ける
+            if path in done_folder_check.done_folder_check():
+                print( "already combined !!!" )
+                exit
 
-# ディレクトリ内の動画をリストで取り出す
-#files = sorted(glob.glob( path + "/*北.mp4"))
+            else:
+                try:
+                    north , south = split_NorS( path )
+                    combine_north( north , path )
+                    combine_south( south , path )
+                    
+                    #記録する処理を書く
+                    done_folder_check.done_folder_add(path)
+                
+                except:
+                    #print("パスが不正か、フォルダ内にファイルが存在しませんでした。")
+                    pass
 
-# 出力ファイル名
-#out_path = f"{ym[0]}年{ym[1]}月北.mp4"
+    elif flag == "date":
 
-#comb_movie(files,out_path)
+        output_path = "test"
 
+combine_movies(['C:\\Users\\TSU8033\\Videos\\original\\2026年\\1月', 'C:\\Users\\TSU8033\\Videos\\original\\2026年\\2月'], "month" , {} )

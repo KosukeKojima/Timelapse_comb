@@ -5,6 +5,9 @@ import re
 import os
 import rename
 
+def month_folder_rename( month_path ):
+    
+
 #リネームが必要かどうかを判定し、リネームするパスを返す関数
 def check_rename( video_paths ):
     rename_paths = []
@@ -51,41 +54,31 @@ def check_files( video_dir ):
     date_folders = sorted(glob.glob(f"{video_dir}\\*月*日[南北].mp4"))
     print(date_folders)
 
-    all_folders = sorted(glob.glob(f"{video_dir}\\*月*日[南北].mp4"))
+    all_folders = sorted(glob.glob(f"{video_dir}\\*月*日[南北].mp4",recursive=True))
     print(all_folders)
 
-
     if len(year_folders) > 0:
-        
         print("年のフォルダが指定されました")
-        
-        all_folders = sorted(glob.glob(f"{video_dir}\\*月*日[南北].mp4",recursive=True))
         #print(all_folders)
-        
-        return "year"
+        return ["year" , year_folders , all_folders]
     
     elif len(month_folders) > 0:
-        
         print("月のフォルダが指定されました")
-        
-        all_folders = sorted(glob.glob(f"{video_dir}\\*月*日[南北].mp4",recursive=True))
         #print(all_folders)
-        
-        return ["month",all_folders]
-    
+        return ["month", month_folders , all_folders]
     
     elif len(date_folders) > 0:
         print("動画ファイルが指定されました")
-        return ["date",date_folders]
+        return ["date" , date_folders , all_folders]
     
     else:
         print("指定されたフォルダが不正、または動画はありませんでした。")
-        return ["error",None]
+        return ["error", None , None]
 
 #テストデータ
-check_files("C:\\Users\\TSU8033\\Videos\\original")
-check_files("C:\\Users\\TSU8033\\Videos\\original\\2025年")
-check_files("C:\\Users\\TSU8033\\Videos\\original\\2025年\\10月")
+#check_files("C:\\Users\\TSU8033\\Videos\\original")
+#check_files("C:\\Users\\TSU8033\\Videos\\original\\2026年")
+#check_files("C:\\Users\\TSU8033\\Videos\\original\\2026年\\1月")
 
 
 #files = check_files("C:\\Users\\TSU8033\\Videos\\original\\2026年\\1月")

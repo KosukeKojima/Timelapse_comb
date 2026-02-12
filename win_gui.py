@@ -9,23 +9,40 @@ import threading
 import glob
 from pathlib import Path
 
+import done_folder_check
 import rename
 import files_check
 import subprocess
+
 flag = False
 
 def hevyprocess(dirPath,flag):
 
+    #月のフォルダのパスを指定すると、その中の日付フォルダを連結する処理
+    
+    #「実行ボタン」を非表示にする
     button1.pack_forget()
 
-    cmd_file = "combine.bat"   # .cmdファイルへのパス
+    #連結した映像の出力先,隠しファイルで連結済みの月を記録する
 
-    #連結した映像の出力先
+    #出力先のVideosフォルダを指定
     home = Path.home()
-    video_dir = f"{home}\\Videos"
+    output_dir = f"{home}\\Videos"
 
-    folders = sorted(glob.glob(f"{dirPath}\\*月"))
-    print(folders)
+    #record.txtが無ければ作成
+    if not os.path.exists(f"{output_dir}\\record.txt"):
+        with open(f"{output_dir}\\record.txt",mode="w",encoding="utf_8") as f:
+            #隠しファイルに設定
+            os.system(f'attrib +h {output_dir}\\record.txt')
+        
+        done_folders = []
+
+    #record.txtがあれば、連結済みの月を確認する
+    else:
+        done_folders = done_folder_check.done_folder_check()
+    
+
+    #指定されたディレクトリを判定する
 
     for folder in folders:
         year = os.path.basename(os.path.dirname(folder))
@@ -116,20 +133,49 @@ def conductMain():
             messagebox.showerror("error", "指定されたフォルダが不正、または動画はありませんでした。")
             return -1
         #その他返り値の場合、2番目の要素を変数に格納
-        all_folders = flag_check[1]
+        all_folders = flag_check[2]
         print(all_folders)
         #all_foldersには動画ファイルのパスが格納されている
         
         rename_paths = files_check.check_rename(all_folders)
         print(rename_paths)
 
+        #リネームが必要なフォルダがある場合、リネーム処理を実行
         for video_dir in rename_paths:
             rename.rename(video_dir)
-        #ソートが正しく行われるようにするためにリネーム処理を先に実行
-        #rename.rename(dirPath)
+            print("リネーム処理が完了しました")
+
+        if flag_check[0] == "year":
+            #年のフォルダが指定された場合、年のフォルダがいくつかあるかを確認
+            year_folders = sorted(glob.glob(f"{dirPath}\\????年"))
+            print(year_folders)
+            if len(year_folders) > 1:
+                #年のフォルダが複数ある場合、年のフォルダごとに処理を分ける
+                for year_folder in year_folders:
+                    folders = sorted(glob.glob(f"{year_folder}\\*月*日[南北].mp4"))
+                    #UIをフリーズさせない為に別スレッドで実行
+                    thread = threading.Thread(target=hevyprocess,args=(folders,flag))
+                    thread.start()
+
+                    #スレッドを起動したら、record.txtに連結済みの月を追記する
+                    month_name = os.path.basename(year_folder)
+                    done_folder_check.done_folder_add(month_name)
+            else:
+                #年のフォルダが1つだけの場合、そのまま処理を進める
+                folders = sorted(glob.glob(f"{dirPath}\\*月*日[南北].mp4"))
+                #UIをフリーズさせない為に別スレッドで実行
+                thread = threading.Thread(target=hevyprocess,args=(all_folders,flag))
+                thread.start()
+                return
+            
+        elif flag_check[0] == "month":
+            #月のフォルダが指定された場合、そのまま処理を進める
+            folders = sorted(glob.glob(f"{dirPath}\\*月*日[南北].mp4"))
+        else:
+            folders = all_folders
 
         #UIをフリーズさせない為に別スレッドで実行
-        thread = threading.Thread(target=hevyprocess,args=(dirPath,flag))
+        thread = threading.Thread(target=hevyprocess,args=(all_folders,flag))
         thread.start()
     
     else:
